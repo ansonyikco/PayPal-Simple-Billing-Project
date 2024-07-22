@@ -53,25 +53,15 @@ def Delivery():
     print(Record.status_book)
     print(Record.Token_book)
     print(Record.id_book)
-    #  Tim - TokenTransfer here [START]
-    global receiving_address, receiving_amount,token_type,available_list,Contract_address
-    print (receiving_address, receiving_amount,token_type,available_list,Contract_address)
-    tx_result = TokenTransaction.transfer_to(Contract_address,receiving_address, receiving_amount)
-    if tx_result:
-        print("Token Transaction Success")
-        return True
-    else:
-        print("Token Transaction Fail")
-        return False
-    #  Tim - TokenTransfer here [END]
+    return True
 
 
 @app.route('/')
 def formPage():
-    Token_list = TokenTransaction.check_available()
+    Token_list = ["P1"]
     global available_list
     available_list = Token_list
-    return render_template('form2.html',Token_list= list(available_list))
+    return render_template('form2.html',Token_list= ['Appl'])
 
 
 @app.route('/back', methods=['POST'])
@@ -97,8 +87,8 @@ def submit():
         receiving_address = request.form['receiving_address']
         receiving_amount = request.form['receiving_amount']
         token_type = request.form['Token']
-        Contract_address=available_list[token_type]
-        order1 = Order(given_name, surname, email,receiving_amount,token_type)  # PayPal_function.make_payment_link(given_name,surname,email)
+        #Contract_address=available_list[token_type]
+        order1 = Order(given_name, surname, email,1,token_type)  # PayPal_function.make_payment_link(given_name,surname,email)
 
         order1.create_order()
         print(order1.id)
@@ -122,7 +112,7 @@ def submit():
 
 @app.route('/check_paid')
 def check_paid():
-    check_paid()
+    #check_paid()
     serial = len(Record.Token_book) - 1
     token = Record.Token_book[serial]
     print(token)
@@ -130,6 +120,7 @@ def check_paid():
     print(PayerID)
     check_result = PayPal_function.check_paid_(token, PayerID)
     status = check_result.get('status')
+    print (status)
     Reference_Number = get_reference_id()
     if status == 'COMPLETED': # paid money
         Record.status_book[-1]='PAYMENT '+status
